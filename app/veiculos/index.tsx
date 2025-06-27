@@ -22,6 +22,10 @@ export default function VeiculosIndex() {
       .catch(() => Alert.alert('Erro', 'Erro ao carregar veículos'));
   }, []);
 
+  const handleEditar = (id: string) => {
+    router.push({ pathname: '/veiculos/editar', params: { id } });
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Veículos</Text>
@@ -37,6 +41,13 @@ export default function VeiculosIndex() {
             <Text style={styles.itemSubtexto}>
               Status: {item.ativo ? 'Ativo' : 'Inativo'}
             </Text>
+
+            <TouchableOpacity
+              style={styles.botaoEditar}
+              onPress={() => handleEditar(item.id)}
+            >
+              <Text style={styles.textoEditar}>Editar</Text>
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -79,6 +90,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#fff',
     marginTop: 4,
+  },
+  botaoEditar: {
+    backgroundColor: '#426B5D',
+    marginTop: 10,
+    paddingVertical: 8,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  textoEditar: {
+    color: '#F0F5F1',
+    fontWeight: 'bold',
   },
   botao: {
     backgroundColor: '#648B7C',

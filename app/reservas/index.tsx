@@ -1,100 +1,118 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { listarReservas } from '@/services/reservas';
 import { Reserva } from '@/types/reserva';
-const router = useRouter();
 
-
-export default function ReservasIndex() {
+export default function ListaReservas() {
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const router = useRouter();
-  <Button title="Voltar" onPress={() => router.back()} />;
 
-  useEffect(() => {
-    listarReservas().then(setReservas);
-  }, []);
+useEffect(() => {
+  listarReservas()
+    .then(res => {
+      const ativas = res.filter(r => r.status !== 'cancelada'); // <-- ignora canceladas
+      setReservas(ativas);
+    })
+    .catch(() => Alert.alert('Erro', 'Erro ao carregar reservas'));
+}, []);
 
   const handleNovaReserva = () => {
     router.push('/reservas/nova');
   };
 
+  const handleEditar = (id: string) => {
+    router.push(`/reservas/editar?id=${id}`);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Histórico de Reservas</Text>
+      <Text style={styles.title}>Reservas</Text>
+
       <FlatList
         data={reservas}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={{ paddingBottom: 24 }}
         renderItem={({ item }) => (
-          <View style={styles.item}>
-            <Text>{item.nomeFuncionario} - {item.modeloCarro}</Text>
-            <Text>{item.data} às {item.hora}</Text>
-            <Text>Status: {item.status}</Text>
+          <View style={styles.card}>
+            <Text style={styles.texto}>
+              {item.nomeFuncionario} — {item.modeloCarro} ({item.placaCarro}){'\n'}
+              {item.data} às {item.hora}
+            </Text>
+            <View style={styles.botoes}>
+              <TouchableOpacity
+                style={styles.editar}
+                onPress={() => handleEditar(item.id)}
+              >
+                <Text style={styles.textoBotao}>Editar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       />
-      <TouchableOpacity style={styles.novaReservaButton} onPress={handleNovaReserva}>
-  <Text style={styles.novaReservaText}>NOVA RESERVA</Text>
-</TouchableOpacity>
 
+      <TouchableOpacity style={styles.novoButton} onPress={handleNovaReserva}>
+        <Text style={styles.novoButtonText}>Nova Reserva</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 20, 
-    backgroundColor: '#2D3E45', 
+  container: {
+    backgroundColor: '#2C3E45',
+    flex: 1,
+    padding: 20,
   },
-  backButton: {
-    alignSelf: 'flex-start',
+  title: {
+    fontSize: 24,
+    color: '#CBD5C0',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  card: {
+    backgroundColor: '#A0C3A8',
+    borderRadius: 8,
+    padding: 14,
+    marginBottom: 12,
+  },
+  texto: {
+    color: '#1D2B32',
+    fontSize: 16,
+    marginBottom: 6,
+  },
+  botoes: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  editar: {
+    backgroundColor: '#648B7C',
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: '#90AF91', 
-    borderRadius: 8,
-    marginBottom: 10,
+    borderRadius: 6,
   },
-  backButtonText: {
-    color: '#fff',
+  textoBotao: {
+    color: '#F0F5F1',
     fontWeight: 'bold',
   },
-  titulo: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#CED8CD', 
-    marginBottom: 16,
-  },
-  item: {
-    backgroundColor: '#A0B8A1', 
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 10,
-  },
-  button: {
-    backgroundColor: '#90AF91', 
+  novoButton: {
+    backgroundColor: '#648B7C',
+    borderRadius: 10,
     paddingVertical: 14,
-    borderRadius: 8,
-    marginTop: 20,
     alignItems: 'center',
+    marginTop: 24,
   },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  novaReservaButton: {
-    backgroundColor: '#90AF91', 
-    paddingVertical: 14,
-    borderRadius: 8,
-    width: '90%',
-    alignSelf: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  novaReservaText: {
-    color: '#ffffff',
+  novoButtonText: {
+    color: '#F0F5F1',
     fontWeight: 'bold',
     fontSize: 16,
   },
 });
-

@@ -1,4 +1,10 @@
-import { collection, addDoc, getDocs, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "@/firebase/config";
 import { Veiculo } from "@/types/veiculo";
 
@@ -13,3 +19,7 @@ export async function listarVeiculos(): Promise<Veiculo[]> {
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Veiculo));
 }
 
+export async function atualizarVeiculo(id: string, dados: Partial<Veiculo>) {
+  const docRef = doc(db, "veiculos", id);
+  await updateDoc(docRef, dados);
+}

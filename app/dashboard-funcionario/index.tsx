@@ -1,45 +1,27 @@
-import React from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
-import { useRouter, usePathname } from 'expo-router';
-
-const tabs = [
-  { label: 'Reservas', path: '/reservas' as const },
-  { label: 'Nova Reserva', path: '/reservas/nova' as const },
-];
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { logout } from '@/services/auth';
 
 export default function DashboardFuncionario() {
   const router = useRouter();
-  const pathname = usePathname();
 
-  const handleLogout = () => {
-    Alert.alert('Logout', 'Você saiu do sistema.');
+  const handleLogout = async () => {
+    await logout();
     router.replace('/auth/login');
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Área do Funcionário</Text>
+      <Text style={styles.title}>Área do Funcionário</Text>
 
-      <View style={styles.tabBar}>
-        {tabs.map((tab) => (
-          <TouchableOpacity
-            key={tab.path}
-            style={[
-              styles.tabItem,
-              pathname === tab.path && styles.activeTab,
-            ]}
-            onPress={() => router.push(tab.path)}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                pathname === tab.path && styles.activeText,
-              ]}
-            >
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+      <View style={styles.buttonGroup}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/reservas')}>
+          <Text style={styles.buttonText}>Reservas</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/reservas/nova')}>
+          <Text style={styles.buttonText}>Nova Reserva</Text>
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -52,49 +34,42 @@ export default function DashboardFuncionario() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: '#2C3E45',
     justifyContent: 'center',
-    backgroundColor: '#2D3E45',
     alignItems: 'center',
+    padding: 24,
   },
-  titulo: {
+  title: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#CED8CD',
+    color: '#CBD5C0',
+    marginBottom: 40,
   },
-  tabBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 30,
-    width: '100%',
+   buttonGroup: {
+    flexDirection: 'column', 
+    gap: 20,
+    alignItems: 'center',
+    marginBottom: 40,
   },
-  tabItem: {
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: '#53746A',
+  button: {
+    backgroundColor: '#648B7C',
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 10,
   },
-  tabText: {
-    fontSize: 16,
-    color: '#CED8CD',
-  },
-  activeTab: {
-    backgroundColor: '#90AF91',
-  },
-  activeText: {
-    color: '#2D3E45',
+  buttonText: {
+    color: '#F0F5F1',
     fontWeight: 'bold',
+    fontSize: 16,
   },
   logoutButton: {
-    marginTop: 40,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 6,
-    backgroundColor: '#CED8CD',
+    backgroundColor: '#D6E3D5',
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 8,
   },
   logoutText: {
-    color: '#2D3E45',
+    color: '#1D2B32',
     fontWeight: 'bold',
   },
 });
